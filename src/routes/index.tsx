@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2, Truck, Sprout } from "lucide-react";
 import heroImage from "@/assets/hero-produce.jpg";
 import { ProductCard } from "@/components/ProductCard";
+import { ProduceHelper } from "@/components/ProduceHelper";
 import { fetchProducts } from "@/lib/shopify";
 
 export const Route = createFileRoute("/")({
@@ -43,6 +44,8 @@ function Index() {
           <Truck className="h-6 w-6" /> Quick doorstep delivery
         </div>
       </section>
+
+      <ProduceHelper products={products ?? []} />
 
       <section id="shop" className="mx-auto max-w-6xl px-4 pb-20">
         <h2 className="mb-6 text-3xl font-semibold">Shop fresh produce</h2>
