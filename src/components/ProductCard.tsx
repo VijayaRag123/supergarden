@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cartStore";
@@ -41,8 +41,8 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
           <span className="text-lg font-bold text-primary">
             {formatPrice(p.priceRange.minVariantPrice.amount, p.priceRange.minVariantPrice.currencyCode)}
           </span>
-          <Button size="sm" className="rounded-full" onClick={handleAdd} disabled={isLoading || !variant?.availableForSale}>
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Plus className="mr-1 h-4 w-4" /> Add</>}
+          <Button size="icon" className="rounded-full" onClick={handleAdd} disabled={isLoading || !variant?.availableForSale} aria-label={`Add ${p.title} to cart`}>
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
           </Button>
         </div>
       </div>
