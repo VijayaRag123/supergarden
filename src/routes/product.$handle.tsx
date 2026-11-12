@@ -14,6 +14,8 @@ export const Route = createFileRoute("/product/$handle")({
       { name: "description", content: "Fresh produce from Fresh Market." },
       { property: "og:title", content: "Product — Fresh Market" },
       { property: "og:description", content: "Fresh produce from Fresh Market." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ProductPage,

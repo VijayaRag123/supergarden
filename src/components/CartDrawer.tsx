@@ -5,9 +5,13 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { ShoppingBasket, Minus, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
 import { formatPrice } from "@/lib/shopify";
+import { supabase } from "@/integrations/supabase/client";
+import { checkoutWithProfile } from "@/lib/account-validation";
+import { toast } from "sonner";
 
 export function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
   const { items, isLoading, isSyncing, updateQuantity, removeItem, getCheckoutUrl, syncCart } = useCartStore();
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const totalPrice = items.reduce((sum, i) => sum + parseFloat(i.price.amount) * i.quantity, 0);
@@ -17,12 +21,22 @@ export function CartDrawer() {
     if (isOpen) syncCart();
   }, [isOpen, syncCart]);
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     const url = getCheckoutUrl();
-    if (url) {
-      window.open(url, "_blank");
+    if (!url) return;
+    setCheckingOut(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      let destination = url;
+      if (user) {
+        const { data: profile, error } = await supabase.from("profiles").select("first_name,surname,mobile_number,home_address").eq("id", user.id).maybeSingle();
+        if (error) throw error;
+        if (profile) destination = checkoutWithProfile(url, profile, user.email);
+      }
+      window.location.assign(destination);
       setIsOpen(false);
-    }
+    } catch { toast.error("Could not start checkout. Please try again."); }
+    finally { setCheckingOut(false); }
   };
 
   return (
@@ -91,8 +105,8 @@ export function CartDrawer() {
                   <span className="text-lg font-semibold">Total</span>
                   <span className="text-xl font-bold">{formatPrice(totalPrice.toString(), currency)}</span>
                 </div>
-                <Button onClick={handleCheckout} className="w-full" size="lg" disabled={items.length === 0 || isLoading || isSyncing}>
-                  {isLoading || isSyncing ? (
+                <Button onClick={handleCheckout} className="w-full" size="lg" disabled={items.length === 0 || isLoading || isSyncing || checkingOut}>
+                  {isLoading || isSyncing || checkingOut ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <>

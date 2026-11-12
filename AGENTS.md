@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Maintain one root AuthProvider subscription for account state and cache invalidation; this prevents competing session listeners.
+- Save customer signup fields in an owner-only profiles table using an auth lifecycle trigger; confirmation-required signups have no session for a browser insert.
+- Validate account forms with shared Zod schemas and profile constraints/triggers; database validation protects direct API writes.
+- Pass verified customers' saved contact details as Shopify checkout prefill parameters; never store passwords in profiles.

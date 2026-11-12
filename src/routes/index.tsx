@@ -13,6 +13,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Shop farm-fresh fruits and vegetables online, delivered to your door." },
       { property: "og:title", content: "Fresh Market — Fruits & Vegetables Delivered" },
       { property: "og:description", content: "Shop farm-fresh fruits and vegetables online, delivered to your door." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,

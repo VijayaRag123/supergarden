@@ -8,11 +8,13 @@ export const Route = createFileRoute("/signup")({
       { name: "description", content: "Create your Fresh Market account." },
       { property: "og:title", content: "Sign up — Fresh Market" },
       { property: "og:description", content: "Create your Fresh Market account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: () => (
-    <main className="mx-auto max-w-md px-4 py-16">
-      <div className="rounded-2xl border bg-card p-8 shadow-soft">
+    <main className="mx-auto max-w-lg px-4 py-10">
+      <div className="border-t-4 border-primary pt-6">
         <AuthForm mode="signup" />
       </div>
     </main>
