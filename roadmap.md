@@ -1,4 +1,8 @@
 # Roadmap
+- [x] Add nine-shop directory using the uploaded spreadsheet
+- [x] Add sample produce catalogs, category filters, and per-shop quantity controls
+- [x] Add a grouped marketplace basket and local sample order confirmation
+- [x] Verify marketplace shopping flow and mobile layout
 - [x] Expanded customer signup, saved profiles, login password controls, and password reset
 - [x] Pre-fill saved customer delivery details at checkout
 - [x] Verify form validation, password controls, mobile layout, and signed-in logout

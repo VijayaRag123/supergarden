@@ -33,3 +33,4 @@ use the editor.
 - Save customer signup fields in an owner-only profiles table using an auth lifecycle trigger; confirmation-required signups have no session for a browser insert.
 - Validate account forms with shared Zod schemas and profile constraints/triggers; database validation protects direct API writes.
 - Pass verified customers' saved contact details as Shopify checkout prefill parameters; never store passwords in profiles.
+- Keep the spreadsheet-derived marketplace directory in a browser-safe data module and separate its client-side sample basket from Shopify checkout; local sample orders must never claim to be sent to merchants.

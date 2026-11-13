@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Leaf, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CartDrawer } from "@/components/CartDrawer";
+import { MarketplaceCart } from "@/components/MarketplaceCart";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -22,12 +22,12 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+      <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:px-6">
         <Link to="/" className="flex items-center gap-2">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <Leaf className="h-5 w-5" />
           </span>
-          <span className="font-display text-xl font-semibold">Fresh Market</span>
+          <span className="font-display text-base font-semibold sm:text-xl">Fresh Market</span>
         </Link>
         <nav className="flex items-center gap-2">
           {!loading && user ? (
@@ -47,7 +47,7 @@ export function SiteHeader() {
               </Button>
             </>
           )}
-          <CartDrawer />
+          <MarketplaceCart />
         </nav>
       </div>
     </header>

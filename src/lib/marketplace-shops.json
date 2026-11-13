@@ -1,0 +1,101 @@
+[
+  {
+    "id": "rajeshwari",
+    "name": "Rajeshwari Vegetable Market (Rajeshwari Fruits & Veggies)",
+    "area": "Ayyapakkam / Kil Ayanambakkam",
+    "address": "Galaxy Road, near Apollo College of Nursing, Ayyapakkam / Kil Ayanambakkam, Chennai 600095",
+    "phone": "+91 94457 45557",
+    "delivery": "In-store / Bulk delivery on advance order",
+    "hours": "6:00 AM – 11:30 PM (Daily)",
+    "rating": "4.4/5",
+    "highlights": "Known for fresh daily produce, greens, and pocket-friendly pricing."
+  },
+  {
+    "id": "bgs-farm-to-market",
+    "name": "BGS Farm To Market",
+    "area": "Mel Ayanambakkam",
+    "address": "11/7, Mel Ayanambakkam, Ambattur Industrial Estate, Thiruverkadu, Chennai 600095",
+    "phone": "+91 93630 48345 (WhatsApp)",
+    "delivery": "Yes (5:30 AM – 9:00 PM)",
+    "hours": "5:00 AM – 10:00 PM (Daily)",
+    "rating": "4.6/5",
+    "highlights": "Delivers farm-fresh vegetables, fruits, mushrooms, and paneer."
+  },
+  {
+    "id": "nilam-fresh",
+    "name": "Nilam Fresh Store",
+    "area": "Vanagaram",
+    "address": "Shop No. 8, 147, MetroCity Road, Phase-1, Rajankuppam, Vanagaram, Chennai 600095",
+    "phone": "+91 98400 15594 (WhatsApp)",
+    "delivery": "Yes (Same-day via WhatsApp)",
+    "hours": "Mon–Sat 8:00 AM – 8:00 PM; Sun 8:00 AM – 1:00 PM",
+    "rating": "4.8/5",
+    "highlights": "Farm-owned operation offering clean greens, tropical fruits, and economic pricing."
+  },
+  {
+    "id": "kashni-jegadha",
+    "name": "KASHNI & JEGADHA VEGETABLE SHOP",
+    "area": "Vanagaram",
+    "address": "94, Vembuli Naicker Street, Sivabatham, Vanagaram, Chennai 600095",
+    "phone": "Not listed",
+    "delivery": "Yes (9:00 AM – 9:30 PM; Thu till 5:00 PM)",
+    "hours": "6:30 AM – 9:30 PM (Daily)",
+    "rating": "5.0/5",
+    "highlights": "Popular for daily-stocked fresh vegetables at wholesale/affordable rates."
+  },
+  {
+    "id": "vs-vegetables",
+    "name": "V.S. Vegetables & Fruits",
+    "area": "Ambattur (ICF Colony)",
+    "address": "1, Ayanambakkam Road, ICF Employees Colony, Ambattur, Chennai 600058",
+    "phone": "+91 95510 40751 (WhatsApp)",
+    "delivery": "Contact via WhatsApp",
+    "hours": "6:30 AM – 11:00 PM (Daily)",
+    "rating": "5.0/5",
+    "highlights": "Renovated, clean layout with fresh seasonal fruits and vegetables."
+  },
+  {
+    "id": "ooty",
+    "name": "Ooty Vegetables & Fruits",
+    "area": "Mogappair West",
+    "address": "1st Avenue, Bus Stand Road, Mogappair West, Chennai 600037",
+    "phone": "+91 44 4355 0500",
+    "delivery": "Yes (Online & Phone orders)",
+    "hours": "7:00 AM – 10:00 PM (Daily)",
+    "rating": "4.0/5",
+    "highlights": "Wide selection of cool-climate and local produce, cut veggies, and dairy. Website: https://ootyvegetablesandfruits.dotpe.in/"
+  },
+  {
+    "id": "uma",
+    "name": "Uma Fruits And Vegetable Store",
+    "area": "Nolambur / Ambattur Ind. Estate",
+    "address": "VGN La Parisienne 2C II Block, 4th Main Rd, Nolambur, Ambattur Industrial Estate, Chennai 600095",
+    "phone": "+91 99411 48004",
+    "delivery": "Yes",
+    "hours": "6:00 AM – 11:00 PM (Daily)",
+    "rating": "4.3/5",
+    "highlights": "Good variety of fresh seasonal and tropical fruits (mangoes, papaya, guava) and daily vegetables."
+  },
+  {
+    "id": "jeyaraani",
+    "name": "Jeyaraani Vegetables & Fruits Mart",
+    "area": "Ambattur",
+    "address": "No. 107, EB Colony, Karukku Main Rd, Ambattur, Chennai 600053",
+    "phone": "+91 99414 18122 (WhatsApp)",
+    "delivery": "Yes",
+    "hours": "6:00 AM – 10:00 PM (Daily)",
+    "rating": "4.2/5",
+    "highlights": "One-stop store for fresh fruits, vegetables, and everyday groceries at reasonable prices."
+  },
+  {
+    "id": "kpn-fresh",
+    "name": "Kovai Pazhamudir Nilayam (KPN Fresh)",
+    "area": "Mogappair / Alapakkam / Anna Nagar",
+    "address": "Nearest Branches: Mogappair (TNHB Block / Thiruvalluvar Salai / Pari Road), Alapakkam, and Anna Nagar",
+    "phone": "Order via App / Website",
+    "delivery": "Yes (App & Web delivery)",
+    "hours": "7:00 AM – 10:00 PM (Daily)",
+    "rating": "",
+    "highlights": "Trusted retail chain specializing in fresh fruits, vegetables, and groceries. Website: https://www.kpnfresh.com/"
+  }
+]
