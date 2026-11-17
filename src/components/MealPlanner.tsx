@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Mic, MicOff, Sparkles } from "lucide-react";
+import { ChefHat, Loader2, Mic, MicOff, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,7 +24,7 @@ const LANGUAGES = [
   { code: "ta-IN", label: "தமிழ்" },
 ];
 
-export function MealPlanner() {
+export function MealPlanner({ iconOnly = false }: { iconOnly?: boolean }) {
   const { user } = useAuth();
   const ask = useServerFn(getMealPlan);
   const [open, setOpen] = useState(false);
@@ -77,9 +77,20 @@ export function MealPlanner() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary" className="rounded-full">
-          <Sparkles className="mr-1 h-4 w-4" /> Plan my week
-        </Button>
+        {iconOnly ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Plan my week: meal ideas and voice ordering"
+            title="Plan my week (meal ideas & voice order)"
+          >
+            <ChefHat className="h-5 w-5" />
+          </Button>
+        ) : (
+          <Button variant="secondary" className="rounded-full">
+            <Sparkles className="mr-1 h-4 w-4" /> Plan my week
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>

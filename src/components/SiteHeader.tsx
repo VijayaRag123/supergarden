@@ -3,6 +3,7 @@ import { Leaf, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarketplaceCart } from "@/components/MarketplaceCart";
 import { HeaderSearch } from "@/components/HeaderSearch";
+import { MealPlanner } from "@/components/MealPlanner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -58,6 +59,7 @@ export function SiteHeader() {
               </Button>
             </>
           )}
+          <MealPlanner iconOnly />
           <MarketplaceCart />
         </nav>
       </div>
