@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PasswordInput } from "@/components/PasswordInput";
 import { emailSchema, loginSchema, signupSchema } from "@/lib/account-validation";
+import { ALREADY_REGISTERED_MESSAGE, describeSignupError } from "@/lib/auth-errors";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
@@ -67,11 +68,21 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         const { email, password, ...details } = profile;
         const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin, data: details } });
         if (error) throw error;
+        // With email confirmation on, Supabase answers "success" for an email that is already registered but
+        // creates nothing and sends nothing, so the customer would wait for an email that never comes.
+        if (data.user && data.user.identities?.length === 0) { setErrors({ email: ALREADY_REGISTERED_MESSAGE }); return; }
         if (data.session) await navigate({ to: "/" });
         else setSent(true);
       }
-    } catch {
-      setErrors({ form: isLogin ? "Could not log in. Check your email and password, and confirm your email first." : "Could not create your account. Please check your details or try logging in." });
+    } catch (error) {
+      if (isLogin) {
+        setErrors({ form: "Could not log in. Check your email and password, and confirm your email first." });
+      } else {
+        // Keep the real reason in the browser console (it never contains the password) and tell the customer what to fix.
+        console.error("Sign-up failed:", error);
+        const failure = describeSignupError(error);
+        setErrors(failure.field ? { [failure.field]: failure.message } : { form: failure.message });
+      }
     } finally { setBusy(false); }
   }
 
