@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Clock3, MapPin, Phone, Search, Star, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { shops, sampleProducts, rupees, getListing } from "@/lib/marketplace";
@@ -8,12 +8,17 @@ import { MarketQuantity } from "@/components/MarketQuantity";
 export const Route = createFileRoute("/shops/$shopId")({
   loader: ({ params }) => { const shop = shops.find(s => s.id === params.shopId); if (!shop) throw notFound(); return shop; },
   head: ({ loaderData }) => { const title = `${loaderData?.name ?? "Shop unavailable"} — Fresh Market`; const description = `Browse fruits and vegetables at ${loaderData?.name ?? "Fresh Market"} in ${loaderData?.area ?? "Chennai"}.`; return { meta: [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }; },
+  // /shops/<id>?q=tomatoes opens the shop with its own search box already filled in (used by the header search).
+  validateSearch: (search: Record<string, unknown>): { q?: string | undefined } => { const q = search["q"]; return { q: typeof q === "string" && q.trim() ? q.trim().slice(0, 60) : undefined }; },
   component: ShopStorefront,
 });
 function ShopStorefront() {
   const shop = Route.useLoaderData();
   const [category, setCategory] = useState("All produce");
-  const [search, setSearch] = useState("");
+  const { q } = Route.useSearch();
+  const [search, setSearch] = useState(q ?? "");
+  // Moving from one header search result to another keeps this page mounted, so refill the box when it changes.
+  useEffect(() => { setSearch(q ?? ""); setCategory("All produce"); }, [q, shop.id]);
   // Each shop shows its own price and stock; products a shop doesn't list are hidden.
   const products = sampleProducts
     .flatMap(product => { const listing = getListing(shop.id, product.id); return listing?.listed ? [{ product, listing }] : []; })
