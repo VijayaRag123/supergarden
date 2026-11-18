@@ -91,6 +91,75 @@ describe("searchMarketplace: finding items", () => {
 describe("searchMarketplace: empty and unknown searches", () => {
   it("returns nothing for blank, punctuation-only or unknown text", () => {
     for (const q of ["", "   ", "&&&", "zzzz"])
-      expect(searchMarketplace(q)).toEqual({ shops: [], products: [], moreProducts: 0 });
+      expect(searchMarketplace(q)).toEqual({
+        shops: [],
+        products: [],
+        groups: [],
+        moreGroups: 0,
+        moreProducts: 0,
+      });
+  });
+});
+
+describe("searchMarketplace: price comparison", () => {
+  const overrides: ListingOverrides = {
+    rajeshwari: { tomatoes: { price: 30, inStock: false } },
+    "nilam-fresh": { tomatoes: { price: 45 } },
+    "kpn-fresh": { tomatoes: { price: 35 } },
+  };
+  it("groups an item's shops with the lowest and highest in-stock price", () => {
+    const { groups } = searchMarketplace("tomato", {}, overrides);
+    expect(groups).toHaveLength(1);
+    const g = groups[0]!;
+    expect(g.product.id).toBe("tomatoes");
+    expect(g.minPrice).toBe(35); // the cheaper Rajeshwari price is out of stock
+    expect(g.maxPrice).toBe(45);
+    expect(g.inStockCount).toBe(8);
+    expect(g.offers[0]!.shop.id).toBe("kpn-fresh");
+    const inStockPrices = g.offers.filter((o) => o.listing.inStock).map((o) => o.listing.price);
+    expect(inStockPrices).toEqual([...inStockPrices].sort((a, b) => a - b));
+    expect(g.offers[g.offers.length - 1]!.shop.id).toBe("rajeshwari");
+  });
+  it("reports no price range when nobody has the item in stock", () => {
+    const none: ListingOverrides = Object.fromEntries(
+      [
+        "rajeshwari",
+        "nilam-fresh",
+        "kpn-fresh",
+        "uma",
+        "ooty",
+        "vs-vegetables",
+        "kashni-jegadha",
+        "bgs-farm-to-market",
+      ].map((id) => [id, { tomatoes: { inStock: false } }]),
+    );
+    const g = searchMarketplace("tomato", {}, none).groups[0]!;
+    expect(g.inStockCount).toBeLessThan(9);
+    const all: ListingOverrides = {};
+    for (const o of g.offers) all[o.shop.id] = { tomatoes: { inStock: false } };
+    const empty = searchMarketplace("tomato", {}, all).groups[0]!;
+    expect(empty.minPrice).toBeNull();
+    expect(empty.maxPrice).toBeNull();
+  });
+  it("lists only the named shop when a shop is added to the search", () => {
+    const g = searchMarketplace("tomato nilam", {}, overrides).groups[0]!;
+    expect(g.offers.map((o) => o.shop.id)).toEqual(["nilam-fresh"]);
+    expect(g.minPrice).toBe(45);
+    expect(g.maxPrice).toBe(45);
+  });
+  it("limits groups and counts the rest", () => {
+    const r = searchMarketplace("fruits", { maxGroups: 1 });
+    expect(r.groups).toHaveLength(1);
+    expect(r.moreGroups).toBeGreaterThan(0);
+  });
+});
+
+describe("searchMarketplace: small typos", () => {
+  it("still finds an item with one wrong or extra letter in a longer word", () => {
+    expect(searchMarketplace("tomatoe").groups[0]?.product.id).toBe("tomatoes");
+    expect(searchMarketplace("tomatos").groups[0]?.product.id).toBe("tomatoes");
+  });
+  it("does not guess on short words", () => {
+    expect(searchMarketplace("tomx").groups).toEqual([]);
   });
 });

@@ -9,8 +9,16 @@ import {
 } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Search, Store, X } from "lucide-react";
-import { rupees } from "@/lib/marketplace";
+import { rupees, type MarketProduct } from "@/lib/marketplace";
 import { searchMarketplace } from "@/lib/marketplace-search";
+
+/** Shown above a product's shops: its name and its lowest-to-highest price. */
+interface GroupHeader {
+  name: string;
+  image: string;
+  range: string;
+  shopCount: number;
+}
 
 type Option =
   | { kind: "shop"; key: string; shopId: string; title: string; subtitle: string }
@@ -19,12 +27,20 @@ type Option =
       key: string;
       shopId: string;
       productName: string;
+      /** The shop name, since the product is named in the header above. */
       title: string;
       subtitle: string;
-      image: string;
       price: string;
       inStock: boolean;
+      badge: "Lowest" | "Highest" | null;
+      header: GroupHeader | null;
     };
+
+/** "₹30 – ₹45 / kg" from lowest to highest, or just "₹30 / kg" when every shop charges the same. */
+function priceRange(min: number | null, max: number | null, unit: MarketProduct["unit"]) {
+  if (min === null || max === null) return "Out of stock everywhere";
+  return min === max ? `${rupees(min)} / ${unit}` : `${rupees(min)} – ${rupees(max)} / ${unit}`;
+}
 
 /** Search box for the site header. Finds shops by name or area, and produce by name at each shop that sells it. */
 export function HeaderSearch() {
@@ -46,17 +62,39 @@ export function HeaderSearch() {
         title: shop.name,
         subtitle: shop.area,
       })),
-      ...results.products.map(({ product, shop, listing }): Option => ({
-        kind: "product",
-        key: `product-${product.id}-${shop.id}`,
-        shopId: shop.id,
-        productName: product.name,
-        title: product.name,
-        subtitle: `${shop.name} · ${shop.area}`,
-        image: product.image,
-        price: `${rupees(listing.price)} / ${product.unit}`,
-        inStock: listing.inStock,
-      })),
+      ...results.groups.flatMap((group) => {
+        const spread =
+          group.minPrice !== null && group.maxPrice !== null && group.minPrice < group.maxPrice;
+        const lastInStock = group.inStockCount - 1;
+        return group.offers.map(({ product, shop, listing }, index): Option => ({
+          kind: "product",
+          key: `product-${product.id}-${shop.id}`,
+          shopId: shop.id,
+          productName: product.name,
+          title: shop.name,
+          subtitle: shop.area,
+          price: `${rupees(listing.price)} / ${product.unit}`,
+          inStock: listing.inStock,
+          // Only label the ends when prices actually differ between shops.
+          badge:
+            !spread || !listing.inStock
+              ? null
+              : index === 0
+                ? "Lowest"
+                : index === lastInStock
+                  ? "Highest"
+                  : null,
+          header:
+            index === 0
+              ? {
+                  name: product.name,
+                  image: product.image,
+                  range: priceRange(group.minPrice, group.maxPrice, product.unit),
+                  shopCount: group.offers.length,
+                }
+              : null,
+        }));
+      }),
     ],
     [results],
   );
@@ -180,11 +218,33 @@ export function HeaderSearch() {
                 <li key={option.key} role="presentation">
                   {index === 0 && shopCount > 0 && <Heading>Shops</Heading>}
                   {index === shopCount && option.kind === "product" && <Heading>Items</Heading>}
+                  {option.kind === "product" && option.header && (
+                    <div className="flex items-center gap-3 px-2 pb-1 pt-2">
+                      <img
+                        src={option.header.image}
+                        alt=""
+                        className="h-9 w-9 shrink-0 rounded-md object-cover"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold">
+                          {option.header.name}
+                        </span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {option.header.shopCount === 1
+                            ? "1 shop"
+                            : `${option.header.shopCount} shops, lowest price first`}
+                        </span>
+                      </span>
+                      <span className="shrink-0 text-sm font-bold text-primary">
+                        {option.header.range}
+                      </span>
+                    </div>
+                  )}
                   <div
                     id={optionId(index)}
                     role="option"
                     aria-selected={index === active}
-                    className={`flex cursor-pointer items-center gap-3 rounded-md px-2 py-2 ${index === active ? "bg-secondary" : "hover:bg-secondary/60"}`}
+                    className={`flex cursor-pointer items-center gap-3 rounded-md py-2 pr-2 ${option.kind === "product" ? "pl-14" : "pl-2"} ${index === active ? "bg-secondary" : "hover:bg-secondary/60"}`}
                     onMouseEnter={() => setActive(index)}
                     onClick={() => choose(option)}
                   >
@@ -192,13 +252,7 @@ export function HeaderSearch() {
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-secondary text-primary">
                         <Store className="h-4 w-4" aria-hidden="true" />
                       </span>
-                    ) : (
-                      <img
-                        src={option.image}
-                        alt=""
-                        className="h-9 w-9 shrink-0 rounded-md object-cover"
-                      />
-                    )}
+                    ) : null}
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-semibold">{option.title}</span>
                       <span className="block truncate text-xs text-muted-foreground">
@@ -207,7 +261,12 @@ export function HeaderSearch() {
                     </span>
                     {option.kind === "product" &&
                       (option.inStock ? (
-                        <span className="shrink-0 text-sm font-bold text-primary">
+                        <span className="flex shrink-0 items-center gap-2 text-sm font-bold text-primary">
+                          {option.badge && (
+                            <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
+                              {option.badge}
+                            </span>
+                          )}
                           {option.price}
                         </span>
                       ) : (
@@ -218,9 +277,10 @@ export function HeaderSearch() {
                   </div>
                 </li>
               ))}
-              {results.moreProducts > 0 && (
+              {results.moreGroups > 0 && (
                 <li role="presentation" className="px-3 py-2 text-xs text-muted-foreground">
-                  {results.moreProducts} more matches. Add a shop name to narrow it down.
+                  {results.moreGroups} more items. Type more letters or add a shop name to narrow it
+                  down.
                 </li>
               )}
             </ul>

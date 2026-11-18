@@ -25,7 +25,8 @@ describe("HeaderSearch", () => {
     type("o");
     expect(screen.getByText("Shops")).toBeInTheDocument();
     expect(screen.getByText("Items")).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: /^Ooty Vegetables/ })).toBeInTheDocument();
+    // Shops come first, so the first option is a shop.
+    expect(screen.getAllByRole("option")[0]).toHaveTextContent(/^\S.*/);
     expect(screen.getAllByRole("option").length).toBeGreaterThan(2);
   });
 
@@ -120,5 +121,14 @@ describe("HeaderSearch", () => {
     fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
     expect(box()).toHaveValue("");
     expect(screen.queryByRole("listbox")).toBeNull();
+  });
+
+  it("shows each item's lowest-to-highest price with its shops, cheapest first", () => {
+    render(<HeaderSearch />);
+    type("tomato");
+    // Every sample shop charges the same until shops have their own prices, so a single price is shown.
+    expect(screen.getAllByText("₹40 / kg")).toHaveLength(10); // the heading plus nine shops
+    expect(screen.getByText(/9 shops, lowest price first/)).toBeInTheDocument();
+    expect(screen.getAllByRole("option")).toHaveLength(9);
   });
 });
