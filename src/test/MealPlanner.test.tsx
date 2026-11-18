@@ -76,6 +76,31 @@ describe("MealPlanner", () => {
     expect(screen.getByRole("button", { name: "Added to basket" })).toBeDisabled();
   });
 
+  it("clears the request and the suggestion when the dialog is closed and reopened", async () => {
+    getMealPlan.mockResolvedValue({
+      ok: true,
+      plan: {
+        summary: "A simple week.",
+        unavailable: [],
+        dishes: [{ name: "Sambar", items: [{ productId: "tomatoes", quantity: 500 }] }],
+      },
+    });
+    render(<MealPlanner />);
+    open();
+    fireEvent.change(screen.getByLabelText("Your request"), {
+      target: { value: "what can I cook this week?" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Suggest basket/ }));
+    expect(await screen.findByText("A simple week.")).toBeInTheDocument();
+
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+    open();
+    expect(screen.getByLabelText("Your request")).toHaveValue("");
+    expect(screen.queryByText("A simple week.")).toBeNull();
+  });
+
   it("shows the error and leaves the basket alone when the planner fails", async () => {
     getMealPlan.mockResolvedValue({
       ok: false,

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { ChefHat, Loader2, Mic, MicOff, Sparkles } from "lucide-react";
@@ -40,6 +40,21 @@ export function MealPlanner({ iconOnly = false }: { iconOnly?: boolean }) {
     [],
   );
   const voice = useSpeechInput(lang, onSpeech);
+  // Bumped on every close, so an answer that arrives after closing is thrown away.
+  const session = useRef(0);
+
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (next) return;
+    // Closing clears everything, so reopening starts fresh.
+    session.current += 1;
+    voice.stop();
+    setText("");
+    setPlan(null);
+    setError(null);
+    setAdded(false);
+    setBusy(false);
+  };
   const resolved = useMemo(() => (plan ? resolvePlan(plan) : null), [plan]);
 
   const submit = async () => {
@@ -48,14 +63,16 @@ export function MealPlanner({ iconOnly = false }: { iconOnly?: boolean }) {
     setError(null);
     setPlan(null);
     setAdded(false);
+    const mine = session.current;
     try {
       const res = await ask({ data: { request: text } });
+      if (mine !== session.current) return;
       if (res.ok) setPlan(res.plan);
       else setError(res.error);
     } catch {
-      setError("Something went wrong. Please try again.");
+      if (mine === session.current) setError("Something went wrong. Please try again.");
     } finally {
-      setBusy(false);
+      if (mine === session.current) setBusy(false);
     }
   };
 
@@ -75,7 +92,7 @@ export function MealPlanner({ iconOnly = false }: { iconOnly?: boolean }) {
     : 0;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {iconOnly ? (
           <Button
@@ -104,7 +121,11 @@ export function MealPlanner({ iconOnly = false }: { iconOnly?: boolean }) {
         {!user ? (
           <p className="text-sm">
             Please{" "}
-            <Link to="/login" className="font-medium underline" onClick={() => setOpen(false)}>
+            <Link
+              to="/login"
+              className="font-medium underline"
+              onClick={() => handleOpenChange(false)}
+            >
               log in
             </Link>{" "}
             to use the meal planner.
